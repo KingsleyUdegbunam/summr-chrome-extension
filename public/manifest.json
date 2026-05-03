@@ -1,9 +1,22 @@
 {
   "manifest_version": 3,
   "name": "Summr",
-  "version": "1.0",
-  "description": "Too long? Summr it",
+  "version": "1.0.0",
+  "description": "Instantly summarize any webpage using AI",
   "action": {
     "default_popup": "index.html"
-  }
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "permissions": ["tabs", "activeTab", "storage", "scripting"],
+  "host_permissions": ["<all_urls>"],
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ]
 }
