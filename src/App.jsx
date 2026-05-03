@@ -1,10 +1,77 @@
+import { useState } from "react";
 import "./App.css";
 
 function App() {
+  const [summary, setSummary] = useState("");
+  const [status, setStatus] = useState("idle");
+  const [clear, setClear] = useState("false");
+
+  const values = {
+    idle: "Ready",
+    extracting: "Reading...",
+    summarizing: "Summarizing...",
+    done: "Done",
+    error: "Error",
+  };
+
+  const handleReset = () => {};
+  const handleRetry = () => {};
+
   return (
-    <section>
-      <h1>Summr</h1>
-      <button>Summarize Page</button>
+    <section className="parent-container">
+      {/* HEADER */}
+      <header className="header-container">
+        <h2>Summr</h2>
+        <div className="indicator-container">
+          <div className={`indicator ${status}`}></div>
+          <span className={`${status}-text indicator-txt`}>
+            {values[status]}
+          </span>
+        </div>
+      </header>
+
+      {/* BODY */}
+      <main className="body">
+        {(status === "extracting" || status === "summarizing") && !summary && (
+          <p>Loading...</p>
+        )}
+        {status === "error" && (
+          <div>
+            <p className="error-text error-message">
+              Could not summarize this page.
+            </p>
+          </div>
+        )}
+
+        {status === "idle" && (
+          <div className="idle-placeholder">
+            Click "📜 Summarize Page" button to summarize.
+          </div>
+        )}
+
+        {status !== "error" && summary && <div>{summary}</div>}
+      </main>
+
+      <footer className="footer">
+        {status === "done" && (
+          <button onClick={handleReset} className="summr-btn secondary">
+            Clear
+          </button>
+        )}
+        <div>
+          {status === "error" && (
+            <button onClick={handleRetry} className="summr-btn try-again">
+              Try again
+            </button>
+          )}
+
+          {status !== "error" && (
+            <button onClick={handleRetry} className="summr-btn primary">
+              📜 Summarize Page
+            </button>
+          )}
+        </div>
+      </footer>
     </section>
   );
 }
