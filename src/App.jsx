@@ -6,6 +6,23 @@ function App() {
   const [status, setStatus] = useState("idle");
   const [clear, setClear] = useState("false");
 
+  async function summarize() {
+    setSummary("");
+    setStatus("extracting");
+
+    //wait to query target tab
+    const [tab] = await chrome.tabs.query({
+      active: true,
+      currentWindow: true,
+    });
+
+    //send message to background worker
+    chrome.runtime.sendMessage({
+      type: "START_SUMMARY",
+      tabId: tab.id,
+    });
+  }
+
   const values = {
     idle: "Ready",
     extracting: "Reading...",
@@ -15,7 +32,11 @@ function App() {
   };
 
   const handleReset = () => {};
-  const handleRetry = () => {};
+  const handleRetry = () => {
+    setSummary("");
+    setStatus("extracting");
+    summarize();
+  };
 
   return (
     <section className="parent-container">
