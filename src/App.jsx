@@ -61,6 +61,11 @@ function App() {
     setCopied(true);
     setTimeout(() => setCopied(false), 3000);
   };
+  const handleReset = () => {
+    setCopied(false);
+    setSummary("");
+    setStatus("idle");
+  };
 
   const handleRetry = () => {
     setSummary("");
@@ -130,6 +135,12 @@ function App() {
           {status === "error" && (
             <button onClick={handleRetry} className="summr-btn try-again">
               Try again
+            </button>
+          )}
+
+          {status === "done" && (
+            <button onClick={handleReset} className="summr-btn secondary">
+              Clear
             </button>
           )}
 
