@@ -111,10 +111,37 @@ button {
   color: white;
   border: none;
   font-weight: bold;
+  opacity: 0.9;
+}
+
+button:hover {
+  opacity: 1;
+}
+
+button:focus-visible {
+  outline: none;
+  border-radius: 6px;
+}
+
+button:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 button.primary {
   background-color: rgb(101, 159, 78);
+}
+
+button.primary:focus-visible {
+  box-shadow: 0 0 0 3px rgba(70, 229, 78, 0.4);
+}
+
+button.secondary {
+  background-color: rgb(216, 62, 62);
+}
+
+button.secondary:focus-visible {
+  box-shadow: 0 0 0 3px rgba(229, 70, 70, 0.4);
 }
 
 button.copy {
@@ -128,19 +155,31 @@ button.copy {
   gap: 0.2rem;
 }
 
+button.copy:hover {
+  color: black;
+}
+
+button.copy:focus-visible {
+  text-decoration: underline;
+}
+
 button.copy span {
   width: 0.5rem;
   height: 0.5rem;
 }
 
-button:hover {
-  color: black;
-}
-
 .summr-btn {
-  padding: 0.5rem;
+  padding: 0.4rem 0.7rem;
   cursor: pointer;
   font-size: 0.6rem;
+}
+
+.summr-btn.try-again {
+  background-color: black;
+}
+
+.summr-btn.try-again:focus-visible {
+  box-shadow: 0 0 0 3px rgba(16, 16, 16, 0.4);
 }
 
 @keyframes pulsate {
