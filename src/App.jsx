@@ -8,12 +8,14 @@ function App() {
   const [copied, setCopied] = useState(false);
   const tabRef = useRef({ id: null, url: null });
 
+  const isRunningRef = useRef(false);
+
   async function summarize(tabId) {
-    if (status === "extracting" || status === "summarizing") return;
+    if (isRunningRef.current) return;
 
     setSummary("");
     setStatus("extracting");
-
+    isRunningRef.current = true;
     //send message to background worker
     chrome.runtime.sendMessage({
       type: "START_SUMMARY",
@@ -40,12 +42,14 @@ function App() {
         if (cached) {
           setSummary(cached);
           setStatus("done");
+          isRunningRef.current = false;
           return;
         }
 
         // START SUMMARY IN CACHE ABSENCE
         await summarize(tab.id);
       } catch {
+        isRunningRef.current = false;
         setStatus("error");
       }
     };
@@ -56,6 +60,10 @@ function App() {
     const listener = async (message) => {
       if (message.type === "STATUS") {
         setStatus(message.status);
+
+        if (message.status === "error") {
+          isRunningRef.current = false;
+        }
       }
 
       if (message.type === "STREAM") {
@@ -63,6 +71,8 @@ function App() {
       }
 
       if (message.type === "DONE") {
+        if (!tabRef.current.url) return;
+        isRunningRef.current = false;
         await setCachedSummary(tabRef.current.url, message.summary);
         setStatus("done");
       }
@@ -89,14 +99,17 @@ function App() {
     setTimeout(() => setCopied(false), 3000);
   };
   const handleReset = async () => {
+    if (isRunningRef.current) return;
     setCopied(false);
     setSummary("");
     setStatus("idle");
 
+    if (!tabRef.current.url) return;
     await chrome.storage.local.remove(tabRef.current.url);
   };
 
   const handleRetry = () => {
+    if (isRunningRef.current) return;
     setSummary("");
     setStatus("extracting");
     summarize(tabRef.current.id);

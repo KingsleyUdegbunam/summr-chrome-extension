@@ -1,3 +1,4 @@
+const activeRequest = new Map();
 async function handleSummary(tabId) {
   try {
     // Tell popup: extracting
@@ -40,12 +41,19 @@ async function handleSummary(tabId) {
     chrome.runtime.sendMessage({ type: "STATUS", status: "done" });
   } catch {
     chrome.runtime.sendMessage({ type: "STATUS", status: "error" });
+  } finally {
+    activeRequest.delete(tabId);
   }
 }
 
-chrome.runtime.onMessage.addListener((message) => {
+chrome.runtime.onMessage.addListener(async (message) => {
   if (message.type === "START_SUMMARY") {
-    handleSummary(message.tabId);
+    const { tabId } = message;
+
+    if (activeRequest.has(tabId)) return;
+
+    activeRequest.set(tabId, true);
+    await handleSummary(message.tabId);
   }
   return true;
 });
