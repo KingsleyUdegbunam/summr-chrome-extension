@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 
 function App() {
@@ -22,6 +22,24 @@ function App() {
       tabId: tab.id,
     });
   }
+
+  useEffect(() => {
+    const listener = (message) => {
+      if (message.type === "STATUS") {
+        setStatus(message.status);
+      }
+
+      if (message.type === "STREAM") {
+        setSummary((prev) => prev + message.chunk);
+      }
+    };
+
+    chrome.runtime.onMessage.addListener(listener);
+
+    return () => {
+      chrome.runtime.onMessage.removeListener(listener);
+    };
+  }, []);
 
   const values = {
     idle: "Ready",
