@@ -24,6 +24,13 @@ function App() {
   }
 
   useEffect(() => {
+    //wrappinig async to make running in useEffect possible
+    const summarizeEffect = async () => {
+      await summarize();
+    };
+    //this allows the extension run on load
+    summarizeEffect();
+
     const listener = (message) => {
       if (message.type === "STATUS") {
         setStatus(message.status);
