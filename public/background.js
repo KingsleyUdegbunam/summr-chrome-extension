@@ -21,7 +21,7 @@ async function handleSummary(tabId) {
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
 
-    let fullSummary;
+    let fullSummary = "";
 
     while (true) {
       const { done, value } = await reader.read();
