@@ -117,8 +117,24 @@ button.primary {
   background-color: rgb(101, 159, 78);
 }
 
-button.secondary {
-  background-color: rgb(255, 63, 63);
+button.copy {
+  background-color: transparent;
+  color: rgb(113, 113, 113);
+  border: none;
+  opacity: 0.8;
+  display: flex;
+  align-items: center;
+  font-weight: 400;
+  gap: 0.2rem;
+}
+
+button.copy span {
+  width: 0.5rem;
+  height: 0.5rem;
+}
+
+button:hover {
+  color: black;
 }
 
 .summr-btn {
