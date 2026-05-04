@@ -4,7 +4,7 @@ import "./App.css";
 function App() {
   const [summary, setSummary] = useState("");
   const [status, setStatus] = useState("idle");
-  const [copied, setCopied] = useState("false");
+  const [copied, setCopied] = useState(false);
 
   async function summarize() {
     setSummary("");
@@ -56,7 +56,11 @@ function App() {
     error: "Error",
   };
 
-  const handleCopy = () => {};
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(summary);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 3000);
+  };
 
   const handleRetry = () => {
     setSummary("");
@@ -118,8 +122,8 @@ function App() {
                   stroke-linejoin="round"
                 />
               </svg>
-            </span>{" "}
-            Copy summary
+            </span>
+            {copied ? "Copied!" : "Copy summary"}
           </button>
         )}
         <div>
