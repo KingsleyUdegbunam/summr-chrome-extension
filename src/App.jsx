@@ -131,7 +131,7 @@ function App() {
       {/* BODY */}
       <main className="body">
         {(status === "extracting" || status === "summarizing") && !summary && (
-          <div class="loader"></div>
+          <div className="loader"></div>
         )}
         {status === "error" && (
           <div>
