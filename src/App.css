@@ -162,6 +162,7 @@ button.copy:hover {
 
 button.copy:focus-visible {
   text-decoration: underline;
+  color: rgb(73, 73, 73);
 }
 
 button.copy span {
