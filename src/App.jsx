@@ -4,7 +4,6 @@ import "./App.css";
 function App() {
   const [summary, setSummary] = useState("");
   const [status, setStatus] = useState("idle");
-  const [clear, setClear] = useState("false");
 
   async function summarize() {
     setSummary("");
@@ -56,11 +55,6 @@ function App() {
     error: "Error",
   };
 
-  const handleReset = () => {
-    setSummary("");
-    setStatus("idle");
-  };
-
   const handleRetry = () => {
     setSummary("");
     setStatus("extracting");
@@ -103,11 +97,6 @@ function App() {
       </main>
 
       <footer className="footer">
-        {status === "done" && (
-          <button onClick={handleReset} className="summr-btn secondary">
-            Clear
-          </button>
-        )}
         <div>
           {status === "error" && (
             <button onClick={handleRetry} className="summr-btn try-again">
