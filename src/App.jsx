@@ -115,7 +115,7 @@ function App() {
             </button>
           )}
 
-          {status !== "error" && (
+          {status === "idle" && (
             <button onClick={handleRetry} className="summr-btn primary">
               📜 Summarize Page
             </button>
