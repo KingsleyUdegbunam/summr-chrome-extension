@@ -1,43 +1,70 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { getCachedSummary, setCachedSummary } from "./storage";
 import "./App.css";
 
 function App() {
   const [summary, setSummary] = useState("");
   const [status, setStatus] = useState("idle");
   const [copied, setCopied] = useState(false);
+  const tabRef = useRef({ id: null, url: null });
 
-  async function summarize() {
+  async function summarize(tabId) {
+    if (status === "extracting" || status === "summarizing") return;
+
     setSummary("");
     setStatus("extracting");
-
-    //wait to query target tab
-    const [tab] = await chrome.tabs.query({
-      active: true,
-      currentWindow: true,
-    });
 
     //send message to background worker
     chrome.runtime.sendMessage({
       type: "START_SUMMARY",
-      tabId: tab.id,
+      tabId: tabId,
     });
   }
 
   useEffect(() => {
-    //wrappinig async to make running in useEffect possible
-    const summarizeEffect = async () => {
-      await summarize();
-    };
-    //this allows the extension run on load
-    summarizeEffect();
+    const init = async () => {
+      try {
+        const [tab] = await chrome.tabs.query({
+          active: true,
+          currentWindow: true,
+        });
 
-    const listener = (message) => {
+        tabRef.current = {
+          id: tab.id,
+          url: tab.url,
+        };
+
+        // LOAD CACHE FIRST
+        const cached = await getCachedSummary(tab.url);
+
+        if (cached) {
+          setSummary(cached);
+          setStatus("done");
+          return;
+        }
+
+        // START SUMMARY IN CACHE ABSENCE
+        await summarize(tab.id);
+      } catch {
+        setStatus("error");
+      }
+    };
+
+    init();
+
+    // LISTENER
+    const listener = async (message) => {
       if (message.type === "STATUS") {
         setStatus(message.status);
       }
 
       if (message.type === "STREAM") {
         setSummary((prev) => prev + message.chunk);
+      }
+
+      if (message.type === "DONE") {
+        await setCachedSummary(tabRef.current.url, message.summary);
+        setStatus("done");
       }
     };
 
@@ -61,16 +88,18 @@ function App() {
     setCopied(true);
     setTimeout(() => setCopied(false), 3000);
   };
-  const handleReset = () => {
+  const handleReset = async () => {
     setCopied(false);
     setSummary("");
     setStatus("idle");
+
+    await chrome.storage.local.remove(tabRef.current.url);
   };
 
   const handleRetry = () => {
     setSummary("");
     setStatus("extracting");
-    summarize();
+    summarize(tabRef.current.id);
   };
 
   return (
