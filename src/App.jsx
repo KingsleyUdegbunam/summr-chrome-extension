@@ -49,7 +49,11 @@ function App() {
     error: "Error",
   };
 
-  const handleReset = () => {};
+  const handleReset = () => {
+    setSummary("");
+    setStatus("idle");
+  };
+
   const handleRetry = () => {
     setSummary("");
     setStatus("extracting");
