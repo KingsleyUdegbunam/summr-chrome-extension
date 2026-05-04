@@ -12,7 +12,7 @@ async function handleSummary(tabId) {
     chrome.runtime.sendMessage({ type: "STATUS", status: "summarizing" });
 
     //send response from the content script to the AI and await response
-    const res = await fetch("http://localhost:3000/api/summarize", {
+    const res = await fetch("https://summr-be.vercel.app/api/summarize", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text: response.text }),
