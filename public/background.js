@@ -20,11 +20,14 @@ async function handleSummary(tabId) {
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
 
+    let fullSummary;
+
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
 
       const chunk = decoder.decode(value, { stream: true });
+      fullSummary += chunk;
 
       // stream chunks back to UI
       chrome.runtime.sendMessage({
@@ -32,6 +35,7 @@ async function handleSummary(tabId) {
         chunk,
       });
     }
+    chrome.runtime.sendMessage({ type: "DONE", summary: fullSummary });
 
     chrome.runtime.sendMessage({ type: "STATUS", status: "done" });
   } catch {
